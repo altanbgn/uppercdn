@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+  // AppUUID: body.UUID,
 )
 
 type App struct {
