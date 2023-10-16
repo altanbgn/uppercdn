@@ -32,7 +32,6 @@ func HandleAPIKeyCreate(w http.ResponseWriter, r *http.Request) {
   database.Instance.Create(&models.APIKey{
     Key: apiKey,
     ExpiryDate: "2021-01-01",
-    // AppUUID: body.UUID,
   })
 
   response := APIKeyResponse {
