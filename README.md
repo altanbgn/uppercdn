@@ -1,2 +1,2 @@
-# UpperCDN
-Open source CDN written in Golang
+# UpperFile
+Open source file upload server written in Golang
