@@ -12,9 +12,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"upperfile.com/internal/config"
-	"upperfile.com/internal/db"
-  "upperfile.com/internal/utils"
+	"upperfile.com/api/internal/config"
+	"upperfile.com/api/internal/db"
+  "upperfile.com/api/internal/utils"
 )
 
 func Start() {

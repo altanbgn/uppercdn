@@ -1,4 +1,4 @@
-module upperfile.com
+module upperfile.com/api
 
 go 1.20
 

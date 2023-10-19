@@ -6,7 +6,7 @@ import (
 	"strings"
   "encoding/json"
 
-  "upperfile.com/internal/utils"
+  "upperfile.com/api/internal/utils"
 )
 
 func VerifyAuth(next http.Handler) http.Handler {

@@ -1,7 +1,7 @@
 package project
 
 import (
-  "upperfile.com/internal/middlewares"
+  "upperfile.com/api/internal/middlewares"
 
 	"github.com/gorilla/mux"
 )

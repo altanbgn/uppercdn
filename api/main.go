@@ -1,7 +1,7 @@
 package main
 
 import (
-  "upperfile.com/internal/app"
+  "upperfile.com/api/internal/app"
 )
 
 func main() {

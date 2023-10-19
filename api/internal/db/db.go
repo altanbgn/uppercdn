@@ -4,7 +4,7 @@ import (
   "log"
   "fmt"
 
-  "upperfile.com/internal/config"
+  "upperfile.com/api/internal/config"
 
   "gorm.io/gorm"
   "gorm.io/gorm/logger"
@@ -28,7 +28,6 @@ func Load() {
   err = DB.AutoMigrate(
     &User{},
     &Project{},
-    &APIKey{},
   )
   if err != nil {
     log.Fatalln("Error migrating database")
