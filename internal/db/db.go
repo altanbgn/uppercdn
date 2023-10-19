@@ -27,6 +27,8 @@ func Load() {
 
   err = DB.AutoMigrate(
     &User{},
+    &Project{},
+    &APIKey{},
   )
   if err != nil {
     log.Fatalln("Error migrating database")

@@ -34,6 +34,7 @@ func MustLoggedIn(next http.Handler) http.Handler {
     userContext := r.Context().Value(utils.UserContextKey)
 
     if userContext == nil {
+      w.Header().Set("Content-Type", "application/json")
       w.WriteHeader(http.StatusUnauthorized)
       _ = json.NewEncoder(w).Encode(map[string]string{
         "status":  "UNAUTHORIZED",

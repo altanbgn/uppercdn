@@ -14,11 +14,13 @@ import (
 
 	"upperfile.com/internal/config"
 	"upperfile.com/internal/db"
+  "upperfile.com/internal/utils"
 )
 
 func Start() {
   r := mux.NewRouter()
 
+  utils.CallClear()
   config.Load()
   db.Load()
 

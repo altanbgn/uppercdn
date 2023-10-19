@@ -7,6 +7,7 @@ import (
 	"upperfile.com/internal/db"
 	"upperfile.com/internal/utils"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -17,19 +18,7 @@ type project struct {
 
 func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-  userId := r.Context().Value(utils.UserContextKey)
-
-  foundUser := &db.User{}
-  userResponse := db.DB.First(foundUser).Where("id = ?", userId)
-  if userResponse.Error != nil {
-    w.WriteHeader(http.StatusNotFound)
-    _ = json.NewEncoder(w).Encode(map[string]string{
-      "status":  "NOT_FOUND",
-      "message": userResponse.Error.Error(),
-    })
-
-    return
-  }
+	userId := r.Context().Value(utils.UserContextKey)
 
 	payload := project{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -43,16 +32,17 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := db.DB.Create(&db.Project{
-		Name:        payload.Name,
-		Description: payload.Description,
-	})
-
-	if response.Error != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	err = db.DB.Exec(
+		"INSERT INTO projects (name, description, user_id) VALUES (?, ?, ?)",
+		payload.Name,
+		payload.Description,
+		uuid.MustParse(userId.(string)),
+	).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(map[string]string{
 			"status":  "INTERNAL_SERVER_ERROR",
-			"message": response.Error.Error(),
+			"message": err.Error(),
 		})
 
 		return
@@ -68,8 +58,8 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-  vars := mux.Vars(r)
-  id := vars["id"]
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	payload := project{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -83,28 +73,79 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  switch r.Method {
-    case "GET": {
-      foundProject := &db.Project{}
-      response := db.DB.First(foundProject).Where("id = ?", id)
+	switch r.Method {
+	case "GET":
+		{
+			foundProject := map[string]interface{}{}
+			err = db.DB.
+				Raw("SELECT * FROM projects WHERE id = ?", id).
+				Scan(&foundProject).
+				Error
 
-      if response.Error != nil {
-        w.WriteHeader(http.StatusBadRequest)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				_ = json.NewEncoder(w).Encode(map[string]string{
+					"status":  "INTERNAL_SERVER_ERROR",
+					"message": err.Error(),
+				})
+
+				return
+			}
+
+			w.WriteHeader(http.StatusCreated)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
+				"status":  "OK",
+				"message": "Project fetched successfully",
+				"data":    foundProject,
+			})
+		}
+
+	case "PUT":
+		{
+      err = db.DB.
+        Model(&db.Project{}).
+        Where("id = ?", id).
+        Updates(payload).
+        Error
+
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				_ = json.NewEncoder(w).Encode(map[string]string{
+					"status":  "INTERNAL_SERVER_ERROR",
+					"message": err.Error(),
+				})
+
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"status":  "OK",
+				"message": "Project updated successfully",
+			})
+		}
+
+	case "DELETE":
+		{
+			err = db.DB.
+				Exec("DELETE FROM projects WHERE id = ?", id).
+				Error
+
+      if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
         _ = json.NewEncoder(w).Encode(map[string]string{
           "status":  "INTERNAL_SERVER_ERROR",
-          "message": response.Error.Error(),
+          "message": err.Error(),
         })
 
         return
       }
 
       w.WriteHeader(http.StatusOK)
-      _ = json.NewEncoder(w).Encode(map[string]interface{}{
+      _ = json.NewEncoder(w).Encode(map[string]string{
         "status":  "OK",
-        "message": "Project fetched successfully",
-        "data": foundProject,
+        "message": "Project deleted successfully",
       })
-
-    }
-  }
+		}
+	}
 }

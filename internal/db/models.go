@@ -19,23 +19,10 @@ type User struct {
 	IsAdmin    bool `gorm:"default:false" json:"is_admin"`
 	IsVerified bool `gorm:"default:false" json:"is_verified"`
 
-  Projects []Project `gorm:"foreignKey:OwnerID" json:"projects"`
+  Projects []Project `gorm:"type:uuid" json:"projects"`
 
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-type APIKey struct {
-	gorm.Model
-	ID        uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()" json:"id"`
-  Key       string    `gorm:"unique"`
-  ExpireAt  time.Time `gorm:"not null"`
-
-	ProjectID uuid.UUID `gorm:"type:uuid;not null"`
-	Project   Project   `gorm:"foreignKey:ProjectID;not null"`
-
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+  CreatedAt time.Time `gorm:"autoCreateTime;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime;default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 type Project struct {
@@ -44,11 +31,25 @@ type Project struct {
 	Name        string    `gorm:"not null" json:"name"`
 	Description string    `gorm:"not null" json:"description"`
 
-  OwnerID uuid.UUID `gorm:"type:uuid;not null" json:"owner_id"`
-  Owner   User      `gorm:"foreignKey:OwnerID" json:"owner"`
+  UserID uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`
+  User   User      `gorm:"constraint:OnDelete:CASCADE;not null" json:"user"`
 
-  APIKeys []APIKey `json:"api_keys"`
+	APIKeys []APIKey `json:"api_keys"`
 
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	CreatedAt time.Time `gorm:"autoCreateTime;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime;default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
+
+type APIKey struct {
+	gorm.Model
+	ID       uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()" json:"id"`
+	Key      string    `gorm:"unique"`
+	ExpireAt time.Time `gorm:"not null"`
+
+	ProjectID uuid.UUID `gorm:"type:uuid;not null" json:"project_id"`
+  Project   Project   `gorm:"constraint:OnDelete:CASCADE;not null" json:"project"`
+
+	CreatedAt time.Time `gorm:"autoCreateTime;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime;default:CURRENT_TIMESTAMP" json:"updated_at"`
+}
+
