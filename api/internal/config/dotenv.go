@@ -26,6 +26,9 @@ type env struct {
   DB_MAX_OPEN_CONNS int
   DB_MAX_IDLE_CONNS int
   DB_CONN_MAX_LIFETIME time.Duration
+
+  MAX_FILE_SIZE int64
+  MAX_FILE_UPLOAD int
 }
 
 var Env = &env{}
@@ -55,6 +58,9 @@ func loadDotenv () {
   Env.DB_MAX_IDLE_CONNS, _ = strconv.Atoi(os.Getenv("DB_MAX_IDLE_CONNS"))
   lifetime, _ := strconv.Atoi(os.Getenv("DB_CONN_MAX_LIFETIME"))
   Env.DB_CONN_MAX_LIFETIME = time.Duration(lifetime) * time.Second
+
+  Env.MAX_FILE_SIZE, _ = strconv.ParseInt(os.Getenv("MAX_FILE_SIZE"), 10, 64)
+  Env.MAX_FILE_UPLOAD, _ = strconv.Atoi(os.Getenv("MAX_FILE_SIZE"))
 }
 
 func Load() {

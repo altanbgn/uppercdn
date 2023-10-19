@@ -7,6 +7,7 @@ import (
 	"upperfile.com/api/internal/db"
 	"upperfile.com/api/internal/utils"
 
+  "github.com/lib/pq"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -14,11 +15,12 @@ import (
 type project struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+  AllowedUrls []string `json:"allowed_urls"`
 }
 
 func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	userId := r.Context().Value(utils.UserContextKey)
+	user_id := r.Context().Value(utils.UserContextKey)
 
 	payload := project{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -34,10 +36,11 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = db.DB.Exec(
-		"INSERT INTO projects (name, description, user_id) VALUES (?, ?, ?)",
+		"INSERT INTO projects (name, description, allowed_urls, user_id) VALUES (?, ?, ?, ?)",
 		payload.Name,
 		payload.Description,
-		uuid.MustParse(userId.(string)),
+    pq.StringArray(payload.AllowedUrls),
+		uuid.MustParse(user_id.(string)),
 	).Error
 
 	if err != nil {
@@ -59,28 +62,28 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 
 func HandleProjectList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	userId := r.Context().Value(utils.UserContextKey)
+	user_id := r.Context().Value(utils.UserContextKey)
 	query := r.URL.Query()
 
 	page := query.Get("page")
-	perPage := query.Get("limit")
+	per_page := query.Get("perPage")
 
 	if page == "" {
 		page = "1"
 	}
 
-	if perPage == "" {
-		perPage = "10"
+	if per_page == "" {
+		per_page = "10"
 	}
 
 	foundProjects := []map[string]interface{}{}
 	err := db.DB.
 		Raw(
 			"SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at OFFSET (? - 1) * ? FETCH NEXT ? ROWS ONLY",
-			userId,
+			user_id,
 			page,
-			perPage,
-			perPage,
+			per_page,
+			per_page,
 		).
 		Scan(&foundProjects).
 		Error
@@ -141,11 +144,15 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+      foundProject["AllowedUrls"] = pq.StringArray(foundProject{"AllowedUrls"}).Value()
+
 			w.WriteHeader(http.StatusCreated)
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"status":  "OK",
 				"message": "Project fetched successfully",
-				"data":    foundProject,
+				"data": map[string]interface{}{
+          AllowedUrls: pq.StringArray(foundProject.AllowedUrls).Value(),
+        },
 			})
 		}
 

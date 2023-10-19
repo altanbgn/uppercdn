@@ -1,7 +1,7 @@
 package file
 
 import (
-  // "upperfile.com/api/internal/middlewares"
+  "net/http"
 
 	"github.com/gorilla/mux"
 )
@@ -13,4 +13,13 @@ func LoadRoutes(r *mux.Router) {
     Path("/upload").
 		Methods("POST").
 		HandlerFunc(HandleUploadFile)
+
+  router.
+    Handle(
+      "/storage",
+      http.StripPrefix(
+        "/file/download",
+        http.FileServer(http.Dir("./../../../../storage"),
+      ),
+    ))
 }

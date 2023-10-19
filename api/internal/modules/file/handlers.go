@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"time"
   "io"
+
+  "upperfile.com/api/internal/config"
 )
 
 func HandleUploadFile(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +32,16 @@ func HandleUploadFile(w http.ResponseWriter, r *http.Request) {
     _ = json.NewEncoder(w).Encode(map[string]string{
       "status": "BAD_REQUEST",
       "error": "Invalid file",
+    })
+
+    return
+  }
+
+  if fileHeader.Size > config.Env.MAX_FILE_SIZE {
+    w.WriteHeader(http.StatusBadRequest)
+    _ = json.NewEncoder(w).Encode(map[string]string{
+      "status": "BAD_REQUEST",
+      "error": "File size exceeded",
     })
 
     return

@@ -20,7 +20,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
   err := json.NewDecoder(r.Body).Decode(&payload)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
-    json.NewEncoder(w).Encode(map[string]string{
+    _ = json.NewEncoder(w).Encode(map[string]string{
       "status": "BAD_REQUEST",
       "message": err.Error(),
     })
