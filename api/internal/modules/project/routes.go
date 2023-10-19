@@ -12,9 +12,14 @@ func LoadRoutes(r *mux.Router) {
   router.Use(middlewares.MustLoggedIn)
 
 	router.
-		Path("/").
 		Methods("POST").
 		HandlerFunc(HandleProjectCreate)
+
+  router.
+    Path("/list").
+    Methods("GET").
+    HandlerFunc(HandleProjectList)
+
 
 	router.
 		Path("/{id}").

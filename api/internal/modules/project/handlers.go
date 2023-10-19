@@ -22,6 +22,7 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 
 	payload := project{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(map[string]string{
@@ -38,6 +39,7 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 		payload.Description,
 		uuid.MustParse(userId.(string)),
 	).Error
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(map[string]string{
@@ -55,6 +57,52 @@ func HandleProjectCreate(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func HandleProjectList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	userId := r.Context().Value(utils.UserContextKey)
+	query := r.URL.Query()
+
+	page := query.Get("page")
+	perPage := query.Get("limit")
+
+	if page == "" {
+		page = "1"
+	}
+
+	if perPage == "" {
+		perPage = "10"
+	}
+
+	foundProjects := []map[string]interface{}{}
+	err := db.DB.
+		Raw(
+			"SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at OFFSET (? - 1) * ? FETCH NEXT ? ROWS ONLY",
+			userId,
+			page,
+			perPage,
+			perPage,
+		).
+		Scan(&foundProjects).
+		Error
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"status":  "INTERNAL_SERVER_ERROR",
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "OK",
+		"message": "Projects fetched successfully",
+		"data":    foundProjects,
+	})
+}
+
 func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -63,6 +111,7 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 
 	payload := project{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(map[string]string{
@@ -102,11 +151,11 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 
 	case "PUT":
 		{
-      err = db.DB.
-        Model(&db.Project{}).
-        Where("id = ?", id).
-        Updates(payload).
-        Error
+			err = db.DB.
+				Model(&db.Project{}).
+				Updates(payload).
+				Where("id = ?", id).
+				Error
 
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -131,21 +180,21 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 				Exec("DELETE FROM projects WHERE id = ?", id).
 				Error
 
-      if err != nil {
-        w.WriteHeader(http.StatusInternalServerError)
-        _ = json.NewEncoder(w).Encode(map[string]string{
-          "status":  "INTERNAL_SERVER_ERROR",
-          "message": err.Error(),
-        })
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				_ = json.NewEncoder(w).Encode(map[string]string{
+					"status":  "INTERNAL_SERVER_ERROR",
+					"message": err.Error(),
+				})
 
-        return
-      }
+				return
+			}
 
-      w.WriteHeader(http.StatusOK)
-      _ = json.NewEncoder(w).Encode(map[string]string{
-        "status":  "OK",
-        "message": "Project deleted successfully",
-      })
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"status":  "OK",
+				"message": "Project deleted successfully",
+			})
 		}
 	}
 }
