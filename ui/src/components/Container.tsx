@@ -7,7 +7,7 @@ type Props = {
 
 export default function Container({ children, className }: Props) {
   const mergedClassName = twMerge(
-    "container flex justify-between items-center px-8 lg:px-16 py-6 mx-auto",
+    "container flex justify-between items-center px-8 lg:p-16 mx-auto",
     className
   )
 
