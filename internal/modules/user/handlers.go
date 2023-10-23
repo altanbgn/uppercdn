@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"upperfile.com/api/internal/db"
-	"upperfile.com/api/internal/utils"
+	"upperfile.com/internal/db"
+	"upperfile.com/internal/utils"
 )
 
 type LoginBody struct {

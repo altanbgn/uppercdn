@@ -1,7 +1,7 @@
 package project
 
 import (
-  "upperfile.com/api/internal/middlewares"
+  "upperfile.com/internal/middlewares"
 
 	"github.com/gorilla/mux"
 )
@@ -19,7 +19,6 @@ func LoadRoutes(r *mux.Router) {
     Path("/list").
     Methods("GET").
     HandlerFunc(HandleProjectList)
-
 
 	router.
 		Path("/{id}").

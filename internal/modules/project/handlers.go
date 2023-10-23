@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"upperfile.com/api/internal/db"
-	"upperfile.com/api/internal/utils"
+	"upperfile.com/internal/db"
+	"upperfile.com/internal/utils"
 
   "github.com/lib/pq"
 	"github.com/google/uuid"
@@ -144,15 +144,11 @@ func HandleProjectID(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-      foundProject["AllowedUrls"] = pq.StringArray(foundProject{"AllowedUrls"}).Value()
-
 			w.WriteHeader(http.StatusCreated)
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"status":  "OK",
 				"message": "Project fetched successfully",
-				"data": map[string]interface{}{
-          AllowedUrls: pq.StringArray(foundProject.AllowedUrls).Value(),
-        },
+				"data": foundProject,
 			})
 		}
 

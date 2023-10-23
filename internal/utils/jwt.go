@@ -3,7 +3,7 @@ package utils
 import (
   "time"
 
-	"upperfile.com/api/internal/config"
+	"upperfile.com/internal/config"
 
 	"github.com/golang-jwt/jwt"
 )

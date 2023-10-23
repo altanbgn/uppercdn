@@ -4,7 +4,7 @@ import (
   "log"
   "fmt"
 
-  "upperfile.com/api/internal/config"
+  "upperfile.com/internal/config"
 
   "gorm.io/gorm"
   "gorm.io/gorm/logger"

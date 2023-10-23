@@ -5,9 +5,9 @@ import (
   "net/http"
   "encoding/json"
 
-	"upperfile.com/api/internal/middlewares"
-	"upperfile.com/api/internal/modules/user"
-	"upperfile.com/api/internal/modules/project"
+	"upperfile.com/internal/middlewares"
+	"upperfile.com/internal/modules/user"
+	"upperfile.com/internal/modules/project"
 
 	"github.com/gorilla/mux"
 )

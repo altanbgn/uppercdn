@@ -9,7 +9,7 @@ import (
 	"time"
   "io"
 
-  "upperfile.com/api/internal/config"
+  "upperfile.com/internal/config"
 )
 
 func HandleUploadFile(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func HandleUploadFile(w http.ResponseWriter, r *http.Request) {
 
   defer file.Close()
 
-  err = os.MkdirAll(fmt.Sprintf("./../../../../storage/%s", projectId), os.ModePerm)
+  err = os.MkdirAll(fmt.Sprintf("./../../../storage/%s", projectId), os.ModePerm)
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     _ = json.NewEncoder(w).Encode(map[string]string{
@@ -60,7 +60,7 @@ func HandleUploadFile(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  dst, err := os.Create(fmt.Sprintf("./../../../../storage/%d%s", time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
+  dst, err := os.Create(fmt.Sprintf("./../../../storage/%d%s", time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     _ = json.NewEncoder(w).Encode(map[string]string{
