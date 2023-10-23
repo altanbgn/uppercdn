@@ -1,4 +1,4 @@
-import React from "react"
+import { createElement } from "react"
 import Link from "next/link"
 import { Bungee_Shade } from "next/font/google"
 import { twMerge } from "tailwind-merge"
@@ -24,11 +24,11 @@ function NavItem({ className, href, icon, children }: NavItemProps) {
     <Link
       href={href}
       className={twMerge(
-        "flex justify-start items-center group w-full text-sm text-left hover:text-red-400 hover:bg-neutral-700 rounded-xl p-4 gap-4 transition duration-200",
+        "flex justify-start items-center group w-full text-left hover:text-red-400 hover:bg-neutral-700 rounded-xl p-4 gap-4 transition duration-200",
         className
       )}
     >
-      {React.createElement(icon, { className: "w-4 h-4 fill-white group-hover:fill-red-400 transition duration-200" })}
+      {createElement(icon, { className: "w-4 h-4 fill-white group-hover:fill-red-400 transition duration-200" })}
       {children}
     </Link>
   )

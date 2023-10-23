@@ -12,8 +12,6 @@ export default function Container({ children, className }: Props) {
   )
 
   return (
-    <div className={mergedClassName}>
-      {children}
-    </div>
+    <div className={mergedClassName}>{children}</div>
   )
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { Open_Sans } from "next/font/google"
 import "./globals.css"
 
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
   return (
     <html lang="en">
       <body className={`flex justify-between items-start ${OPEN_SANS_FONT.className}`}>
