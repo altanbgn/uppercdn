@@ -24,7 +24,7 @@ function NavItem({ className, href, icon, children }: NavItemProps) {
     <Link
       href={href}
       className={twMerge(
-        "flex justify-start items-center group gap-4 w-full text-left hover:text-red-400 hover:bg-neutral-700 rounded-xl p-4 transition duration-200",
+        "flex justify-start items-center group w-full text-sm text-left hover:text-red-400 hover:bg-neutral-700 rounded-xl p-4 gap-4 transition duration-200",
         className
       )}
     >
