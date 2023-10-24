@@ -8,6 +8,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/rs/cors v1.10.1
 	golang.org/x/crypto v0.14.0
 	gorm.io/driver/postgres v1.5.3
 	gorm.io/gorm v1.25.5

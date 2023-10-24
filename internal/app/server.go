@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+  "github.com/rs/cors"
 	"github.com/gorilla/mux"
 
 	"upperfile.com/internal/config"
@@ -26,13 +27,21 @@ func Start() {
 
 	LoadRoutes(r)
 
+  c := cors.New(cors.Options{
+    AllowedOrigins: []string{"*"},
+    AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowCredentials: true,
+  })
+
+  handler := c.Handler(r)
+
 	server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", config.Env.HOST, config.Env.PORT),
 
     WriteTimeout: time.Second * 15,
     ReadTimeout: time.Second * 15,
     IdleTimeout: time.Second * 60,
-		Handler: r,
+		Handler: handler,
 	}
 
 	go func() {
