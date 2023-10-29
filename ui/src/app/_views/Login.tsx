@@ -29,7 +29,7 @@ export default function Login() {
         window.location.reload()
       })
       .catch((err) => {
-        setMessage(err.response?.data?.message || err.message || "Something went wrong")
+        setMessage(err.response?.data?.message || err.message || "Something went wrong!")
       })
   }
 
