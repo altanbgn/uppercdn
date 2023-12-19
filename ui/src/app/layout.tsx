@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: "Dashboard - Upperfile",
 }
 
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
